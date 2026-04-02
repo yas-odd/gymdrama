@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymDrama — Evolução</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="badge">seu histórico completo</div>
+      <h1>Gym<span>Drama</span> ✦</h1>
+      <p class="subtitulo">evolução, recordes e padrões do seu treino</p>
+    </header>
+
+    <nav class="app-nav">
+      <a href="index.html" class="nav-btn">🎭 análise</a>
+      <a href="evolucao.html" class="nav-btn active">📈 evolução</a>
+    </nav>
+
+    <!-- SEM DADOS -->
+    <div id="sem-dados" style="display:none">
+      <div class="card empty-state">
+        <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
+        <div style="font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px;">nenhum treino registrado ainda</div>
+        <div style="font-size: 13px; color: #999; margin-bottom: 16px;">registra um treino na aba análise ou importa um arquivo CSV</div>
+        <a href="index.html" class="btn-gerar" style="display:block; text-decoration:none; text-align:center">ir para análise →</a>
+      </div>
+    </div>
+
+    <!-- COM DADOS -->
+    <div id="com-dados" style="display:none">
+
+      <!-- STATS GERAIS -->
+      <section class="card" id="stats-gerais">
+        <div class="card-header">
+          <div class="icone">🏆</div>
+          <span class="card-titulo">visão geral</span>
+        </div>
+        <div class="resumo-stats" id="stats-grid"></div>
+      </section>
+
+      <!-- FREQUÊNCIA -->
+      <section class="card" id="card-frequencia">
+        <div class="card-header">
+          <div class="icone">📅</div>
+          <span class="card-titulo">treinos por mês</span>
+        </div>
+        <canvas id="chart-frequencia" height="180"></canvas>
+      </section>
+
+      <!-- VOLUME POR GRUPAMENTO -->
+      <section class="card" id="card-grupamento">
+        <div class="card-header">
+          <div class="icone">💪</div>
+          <span class="card-titulo">volume por grupamento</span>
+        </div>
+        <canvas id="chart-grupamento" height="200"></canvas>
+      </section>
+
+      <!-- EVOLUÇÃO DE CARGA -->
+      <section class="card" id="card-carga">
+        <div class="card-header">
+          <div class="icone">📊</div>
+          <span class="card-titulo">evolução de carga</span>
+        </div>
+        <div class="form-field" style="margin-bottom: 14px">
+          <label class="form-label">escolha o exercício</label>
+          <select id="select-exercicio" class="form-input" onchange="atualizarGraficoCarga()">
+            <option value="">selecione...</option>
+          </select>
+        </div>
+        <canvas id="chart-carga" height="200"></canvas>
+      </section>
+
+      <!-- RECORDES PESSOAIS -->
+      <section class="card" id="card-recordes">
+        <div class="card-header">
+          <div class="icone">🥇</div>
+          <span class="card-titulo">recordes pessoais</span>
+        </div>
+        <div id="lista-recordes"></div>
+      </section>
+
+      <!-- EXPORTAR -->
+      <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
+  <button class="btn-exportar" onclick="exportarHistorico()" style="flex:1">↓ baixar JSON</button>
+  <button class="btn-exportar" onclick="exportarHistoricoCSV()" style="flex:1">↓ baixar CSV</button>
+</div>
+<div style="margin-bottom: 2rem;">
+  <button class="btn-outline" onclick="confirmarLimpar()" style="width:100%">
+    limpar histórico
+  </button>
+</div>
+
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="evolucao.js"></script>
+  </body>
+</html>
