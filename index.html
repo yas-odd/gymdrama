@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GymDrama</title>
     <link rel="stylesheet" href="style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&family=Space+Grotesk:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   </head>
-
   <body>
+
     <header>
       <div class="badge">seu treino tem muito a dizer</div>
       <h1>Gym<span>Drama</span> ✦</h1>
@@ -23,7 +20,6 @@
       <a href="evolucao.html" class="nav-btn">📈 evolução</a>
     </nav>
 
-    <!-- TABS DE ENTRADA -->
     <div class="entrada-tabs">
       <button class="tab-btn active" onclick="trocarTab('manual')">✏️ manual</button>
       <button class="tab-btn" onclick="trocarTab('csv')">📂 importar arquivo</button>
@@ -35,7 +31,6 @@
         <div class="icone">📋</div>
         <span class="card-titulo">dados do treino</span>
       </div>
-
       <div class="form-row">
         <div class="form-field">
           <label class="form-label">nome do treino</label>
@@ -46,7 +41,6 @@
           <input type="number" id="input-duracao" class="form-input" placeholder="60" />
         </div>
       </div>
-
       <hr class="form-divider" />
       <div class="form-section-label">exercícios</div>
       <div id="lista-exercicios"></div>
@@ -61,7 +55,6 @@
         <div class="icone">📂</div>
         <span class="card-titulo">importar arquivo</span>
       </div>
-
       <div class="upload-area" id="upload-area"
         ondragover="event.preventDefault(); this.classList.add('dragover')"
         ondragleave="this.classList.remove('dragover')"
@@ -70,11 +63,9 @@
         <div class="upload-icon">📄</div>
         <div class="upload-texto">arrasta seu arquivo CSV aqui</div>
         <div class="upload-sub">ou clica para selecionar</div>
-        <input type="file" id="input-csv" accept=".csv" style="display:none" onchange="handleFileInput(event)" />
+        <input type="file" id="input-csv" accept=".csv,.json" style="display:none" onchange="handleFileInput(event)" />
       </div>
-
       <div id="csv-status" class="csv-status" style="display:none"></div>
-
       <div id="csv-selector" style="display:none">
         <hr class="form-divider" />
         <div class="form-section-label">qual treino analisar?</div>
@@ -117,13 +108,13 @@
     </section>
 
     <button id="btn-novo" style="display:none" onclick="resetar()" class="btn-outline">
-  + analisar outro treino
-</button>
+      + analisar outro treino
+    </button>
 
-<div id="btn-exportar-grupo" style="display:none; gap: 10px; margin-bottom: 2rem;">
-  <button class="btn-exportar" onclick="exportarHistorico()">↓ baixar JSON</button>
-  <button class="btn-exportar" onclick="exportarHistoricoCSV()">↓ baixar CSV</button>
-</div>
+    <div id="btn-exportar-grupo" style="display:none; gap: 10px; margin-bottom: 2rem;">
+      <button class="btn-exportar" onclick="exportarHistorico()">↓ baixar JSON</button>
+      <button class="btn-exportar" onclick="exportarHistoricoCSV()">↓ baixar CSV</button>
+    </div>
 
     <script src="storage.js"></script>
     <script src="data.js"></script>

@@ -1,9 +1,9 @@
 // ============================================
 // GYMDRAMA — storage.js
-// Gerencia o histórico de treinos no navegador
 // ============================================
 
 const STORAGE_KEY = "gymdrama_historico"
+
 const MAPEAMENTO_EXERCICIOS = {
   "peito": [
     "Bench Press (Barbell)", "Bench Press (Dumbbell)", "Cable Fly Crossovers",
@@ -70,7 +70,7 @@ const MAPEAMENTO_EXERCICIOS = {
 }
 
 function detectarGrupoExercicio(nomeExercicio) {
-  const nome = nomeExercicio.trim()
+  const nome = (nomeExercicio || "").trim()
   for (const [grupo, exercicios] of Object.entries(MAPEAMENTO_EXERCICIOS)) {
     if (exercicios.some(e => e.toLowerCase() === nome.toLowerCase())) {
       return grupo
@@ -79,17 +79,14 @@ function detectarGrupoExercicio(nomeExercicio) {
   return null
 }
 
+
 // === SALVAR TREINO ===
 function salvarTreino(treino) {
   const historico = carregarHistorico()
-
-  // Gera um ID único baseado na data e hora
   const id = `treino_${Date.now()}`
   const treinoComId = { ...treino, id, savedAt: new Date().toISOString() }
-
   historico.push(treinoComId)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(historico))
-
   return treinoComId
 }
 
@@ -108,67 +105,88 @@ function deletarTreino(id) {
 }
 
 
-// === EXPORTAR HISTÓRICO COMO JSON ===
+// === EXPORTAR JSON ===
 function exportarHistorico() {
   const historico = carregarHistorico()
-
-  if (historico.length === 0) {
-    alert("Nenhum treino salvo ainda!")
-    return
-  }
+  if (historico.length === 0) { alert("Nenhum treino salvo ainda!"); return }
 
   const blob = new Blob([JSON.stringify(historico, null, 2)], { type: "application/json" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement("a")
+  a.href     = url
   a.download = `gymdrama_historico_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.json`
   a.click()
   URL.revokeObjectURL(url)
 }
 
 
-// === IMPORTAR HISTÓRICO DE JSON ===
+// === EXPORTAR CSV ===
+function exportarHistoricoCSV() {
+  const historico = carregarHistorico()
+  if (historico.length === 0) { alert("Nenhum treino salvo ainda!"); return }
+
+  const linhas = [
+    ["data","nome_treino","duracao_min","exercicio","grupo","series","reps","carga_kg","carga_max_kg","volume_total_kg","fonte"].join(",")
+  ]
+
+  historico.forEach(t => {
+    t.exercicios.forEach(ex => {
+      linhas.push([
+        `"${t.data || ""}"`,
+        `"${t.nome || ""}"`,
+        t.duracao || 0,
+        `"${ex.nome || ""}"`,
+        `"${ex.grupo || ""}"`,
+        ex.series || 0,
+        ex.reps || 0,
+        ex.carga || 0,
+        ex.cargaMax || 0,
+        ex.volumeTotal || 0,
+        `"${t.fonte || "manual"}"`
+      ].join(","))
+    })
+  })
+
+  const blob = new Blob([linhas.join("\n")], { type: "text/csv;charset=utf-8;" })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement("a")
+  a.href     = url
+  a.download = `gymdrama_historico_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+
+// === IMPORTAR JSON ===
 function importarHistoricoJSON(arquivo) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-
     reader.onload = (e) => {
       try {
         const dados = JSON.parse(e.target.result)
-
-        if (!Array.isArray(dados)) {
-          reject("Arquivo inválido — esperava uma lista de treinos.")
-          return
-        }
-
+        if (!Array.isArray(dados)) { reject("Arquivo inválido."); return }
         const historicoAtual = carregarHistorico()
-        const idsExistentes = new Set(historicoAtual.map(t => t.id))
-
-        // Evita duplicatas
-        const novos = dados.filter(t => !idsExistentes.has(t.id))
+        const idsExistentes  = new Set(historicoAtual.map(t => t.id))
+        const novos  = dados.filter(t => !idsExistentes.has(t.id))
         const merged = [...historicoAtual, ...novos]
-
         localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
         resolve({ total: merged.length, novos: novos.length })
-      } catch {
-        reject("Arquivo JSON inválido ou corrompido.")
-      }
+      } catch { reject("Arquivo JSON inválido.") }
     }
-
     reader.onerror = () => reject("Erro ao ler o arquivo.")
     reader.readAsText(arquivo)
   })
 }
 
 
-// === LER E PROCESSAR CSV ===
+// === PROCESSAR CSV ===
 function processarCSV(arquivo) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
     reader.onload = (e) => {
       try {
-        const linhas = e.target.result.split("\n").filter(l => l.trim())
+        const linhas   = e.target.result.split("\n").filter(l => l.trim())
         const cabecalho = parsearLinha(linhas[0])
 
         const idx = {
@@ -181,11 +199,10 @@ function processarCSV(arquivo) {
           reps:       cabecalho.indexOf("reps"),
         }
 
-        // Agrupa linhas por treino (title + start_time)
         const mapa = {}
 
         for (let i = 1; i < linhas.length; i++) {
-          const cols = parsearLinha(linhas[i])
+          const cols      = parsearLinha(linhas[i])
           if (cols.length < 5) continue
 
           const titulo    = limpar(cols[idx.title])
@@ -197,7 +214,7 @@ function processarCSV(arquivo) {
           const reps      = parseInt(limpar(cols[idx.reps])) || 0
 
           if (!titulo || !exercicio) continue
-          if (setType === "warmup") continue  // ignora aquecimento
+          if (setType === "warmup") continue
 
           const chave = `${titulo}__${inicio}`
 
@@ -217,7 +234,7 @@ function processarCSV(arquivo) {
           if (!mapa[chave].exercicios[exercicio]) {
             mapa[chave].exercicios[exercicio] = {
               nome:   exercicio,
-              grupo:  null,
+              grupo:  detectarGrupoExercicio(exercicio),
               series: []
             }
           }
@@ -225,38 +242,30 @@ function processarCSV(arquivo) {
           mapa[chave].exercicios[exercicio].series.push({ peso, reps })
         }
 
-        // Converte para array e calcula totais
         const treinos = Object.values(mapa).map(t => {
           const exerciciosArray = Object.values(t.exercicios).map(ex => {
-            const series    = ex.series.length
-            const repsTotal = ex.series.reduce((a, s) => a + s.reps, 0)
-            const repsMedia = series > 0 ? Math.round(repsTotal / series) : 0
-            const cargaMax  = Math.max(...ex.series.map(s => s.peso))
-            const cargaMedia = series > 0
-              ? Math.round(ex.series.reduce((a, s) => a + s.peso, 0) / series)
-              : 0
+            const series     = ex.series.length
+            const repsMedia  = series > 0 ? Math.round(ex.series.reduce((a, s) => a + s.reps, 0) / series) : 0
+            const cargaMax   = Math.max(...ex.series.map(s => s.peso))
+            const cargaMedia = series > 0 ? Math.round(ex.series.reduce((a, s) => a + s.peso, 0) / series) : 0
+            const volume     = ex.series.reduce((a, s) => a + s.peso * s.reps, 0)
 
             return {
-              nome:      ex.nome,
-              grupo:     ex.grupo,
+              nome:        ex.nome,
+              grupo:       ex.grupo,
               series,
-              reps:      repsMedia,
-              carga:     cargaMedia,
+              reps:        repsMedia,
+              carga:       cargaMedia,
               cargaMax,
-              volumeTotal: ex.series.reduce((a, s) => a + s.peso * s.reps, 0)
+              volumeTotal: volume
             }
           })
 
           const pesoTotal = exerciciosArray.reduce((a, ex) => a + ex.volumeTotal, 0)
 
-          return {
-            ...t,
-            exercicios: exerciciosArray,
-            pesoTotalLevantado: Math.round(pesoTotal)
-          }
+          return { ...t, exercicios: exerciciosArray, pesoTotalLevantado: Math.round(pesoTotal) }
         })
 
-        // Salva no histórico evitando duplicatas
         const historicoAtual = carregarHistorico()
         const idsExistentes  = new Set(historicoAtual.map(t => t.id))
         const novos          = treinos.filter(t => !idsExistentes.has(t.id))
@@ -277,7 +286,6 @@ function processarCSV(arquivo) {
 
 
 // === UTILITÁRIOS ===
-
 function parsearLinha(linha) {
   const resultado = []
   let atual = ""
@@ -285,7 +293,6 @@ function parsearLinha(linha) {
 
   for (let i = 0; i < linha.length; i++) {
     const char = linha[i]
-
     if (char === '"') {
       dentroDeAspas = !dentroDeAspas
     } else if (char === "," && !dentroDeAspas) {
@@ -314,24 +321,21 @@ function formatarData(str) {
 function converterDataISO(str) {
   if (!str) return ""
   try {
-    const semHora = str.split(",")[0].trim()   // "31 Mar 2026"
-    const partes  = semHora.split(" ")          // ["31", "Mar", "2026"]
+    const semHora = str.split(",")[0].trim()
+    const partes  = semHora.split(" ")
     const dia     = partes[0].padStart(2, "0")
     const mes     = mesToNumero(partes[1]).padStart(2, "0")
     const ano     = partes[2]
     return `${ano}-${mes}-${dia}`
-  } catch {
-    return ""
-  }
+  } catch { return "" }
 }
 
 function mesToNumero(mes) {
   const meses = {
-    jan: "1", feb: "2", mar: "3", apr: "4",
-    may: "5", jun: "6", jul: "7", aug: "8",
-    sep: "9", oct: "10", nov: "11", dec: "12"
+    jan:"1", feb:"2", mar:"3", apr:"4", may:"5", jun:"6",
+    jul:"7", aug:"8", sep:"9", oct:"10", nov:"11", dec:"12"
   }
-  return meses[mes.toLowerCase().slice(0, 3)] || "1"
+  return meses[(mes || "").toLowerCase().slice(0, 3)] || "1"
 }
 
 function calcularDuracao(inicio, fim) {
@@ -342,49 +346,7 @@ function calcularDuracao(inicio, fim) {
       const [h, m]               = (timePart || "00:00").trim().split(":")
       return new Date(`${year}-${mesToNumero(month).padStart(2,"0")}-${day.padStart(2,"0")}T${h.padStart(2,"0")}:${m.padStart(2,"0")}`)
     }
-
     const diff = (parseDate(fim) - parseDate(inicio)) / 60000
     return Math.round(diff)
-  } catch {
-    return 0
-  }
-}
-// === EXPORTAR HISTÓRICO COMO CSV ===
-function exportarHistoricoCSV() {
-  const historico = carregarHistorico()
-
-  if (historico.length === 0) {
-    alert("Nenhum treino salvo ainda!")
-    return
-  }
-
-  const linhas = [
-    ["data", "nome_treino", "duracao_min", "exercicio", "grupo", "series", "reps", "carga_kg", "carga_max_kg", "volume_total_kg", "fonte"].join(",")
-  ]
-
-  historico.forEach(t => {
-    t.exercicios.forEach(ex => {
-      linhas.push([
-        `"${t.data || ""}"`,
-        `"${t.nome || ""}"`,
-        t.duracao || 0,
-        `"${ex.nome || ""}"`,
-        `"${ex.grupo || ""}"`,
-        ex.series || 0,
-        ex.reps || 0,
-        ex.carga || 0,
-        ex.cargaMax || 0,
-        ex.volumeTotal || 0,
-        `"${t.fonte || "manual"}"`
-      ].join(","))
-    })
-  })
-
-  const blob = new Blob([linhas.join("\n")], { type: "text/csv;charset=utf-8;" })
-  const url  = URL.createObjectURL(blob)
-  const a    = document.createElement("a")
-  a.href     = url
-  a.download = `gymdrama_historico_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+  } catch { return 0 }
 }

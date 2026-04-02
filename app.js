@@ -8,8 +8,7 @@ const GRUPOS_MUSCULARES = {
 }
 
 let contadorExercicios = 0
-let treinoAtual = null
-let treinosImportados = []
+let treinoAtual        = null
 
 
 // === TABS ===
@@ -17,11 +16,9 @@ let treinosImportados = []
 function trocarTab(tab) {
   document.getElementById("tab-manual").style.display = tab === "manual" ? "block" : "none"
   document.getElementById("tab-csv").style.display    = tab === "csv"    ? "block" : "none"
-
   document.querySelectorAll(".tab-btn").forEach((btn, i) => {
     btn.classList.toggle("active", (i === 0 && tab === "manual") || (i === 1 && tab === "csv"))
   })
-
   esconderResultados()
 }
 
@@ -29,11 +26,11 @@ function trocarTab(tab) {
 // === FORMULÁRIO MANUAL ===
 
 function adicionarExercicio() {
-  const id = contadorExercicios++
+  const id        = contadorExercicios++
   const container = document.getElementById("lista-exercicios")
-  const bloco = document.createElement("div")
+  const bloco     = document.createElement("div")
   bloco.className = "ex-box"
-  bloco.id = `ex-${id}`
+  bloco.id        = `ex-${id}`
 
   const tagsSuperiores = GRUPOS_MUSCULARES.superior.map(g =>
     `<span class="musculo-tag" data-grupo="${g}" onclick="toggleMusculo(this,${id})">${g}</span>`
@@ -99,30 +96,30 @@ function coletarDadosManuais() {
     const grupo   = grupoEl ? grupoEl.dataset.grupo : null
 
     if (exNome) {
-      exercicios.push({ nome: exNome, series, reps, carga, grupo, cargaMax: carga, volumeTotal: series * reps * carga })
+      exercicios.push({
+        nome: exNome, series, reps, carga, grupo,
+        cargaMax: carga,
+        volumeTotal: series * reps * carga
+      })
       pesoTotal += series * reps * carga
     }
   })
 
   return {
-    nome,
-    duracao,
-    exercicios,
+    nome, duracao, exercicios,
     pesoTotalLevantado: Math.round(pesoTotal),
-    data: new Date().toLocaleDateString("pt-BR"),
+    data:    new Date().toLocaleDateString("pt-BR"),
     dataISO: new Date().toISOString().split("T")[0],
-    fonte: "manual"
+    fonte:   "manual"
   }
 }
 
 function gerarDramaManual() {
   const dados = coletarDadosManuais()
-
   if (dados.exercicios.length === 0) {
     alert("Adiciona pelo menos um exercício!")
     return
   }
-
   salvarTreino(dados)
   treinoAtual = dados
   mostrarResultados()
@@ -146,45 +143,40 @@ function handleFileInput(event) {
 async function processarArquivo(arquivo) {
   const status = document.getElementById("csv-status")
   status.style.display = "block"
-  status.className = "csv-status loading"
-  status.textContent = "processando arquivo..."
+  status.className     = "csv-status loading"
+  status.textContent   = "processando arquivo..."
 
   try {
     const resultado = await processarCSV(arquivo)
-
-    status.className = "csv-status sucesso"
+    status.className   = "csv-status sucesso"
     status.textContent = `✓ ${resultado.novos} treinos novos importados! (${resultado.total} no histórico total)`
-
-    treinosImportados = resultado.treinos.length > 0 ? resultado.treinos : carregarHistorico()
-
     preencherSeletorTreinos()
     document.getElementById("csv-selector").style.display = "block"
-
   } catch (err) {
-    status.className = "csv-status erro"
+    status.className   = "csv-status erro"
     status.textContent = `✗ ${err}`
   }
 }
 
 function preencherSeletorTreinos() {
-  const select   = document.getElementById("select-treino")
+  const select    = document.getElementById("select-treino")
   const historico = carregarHistorico()
     .sort((a, b) => (b.dataISO || "").localeCompare(a.dataISO || ""))
 
   select.innerHTML = '<option value="">selecione um treino...</option>'
-
   historico.forEach((t, i) => {
-    const option = document.createElement("option")
-    option.value = i
+    const option       = document.createElement("option")
+    option.value       = i
     option.textContent = `${t.data || "sem data"} — ${t.nome}`
     select.appendChild(option)
   })
 }
 
 function gerarDramaCSV() {
-  const select   = document.getElementById("select-treino")
-  const idx      = select.value
-  const historico = carregarHistorico().sort((a, b) => (b.dataISO || "").localeCompare(a.dataISO || ""))
+  const select    = document.getElementById("select-treino")
+  const idx       = select.value
+  const historico = carregarHistorico()
+    .sort((a, b) => (b.dataISO || "").localeCompare(a.dataISO || ""))
 
   if (idx === "" || !historico[idx]) {
     alert("Seleciona um treino primeiro!")
@@ -196,15 +188,14 @@ function gerarDramaCSV() {
 }
 
 
-// === MOSTRAR / ESCONDER RESULTADOS ===
+// === RESULTADOS ===
 
 function mostrarResultados() {
   ;["resumo", "drama", "personagem", "equivalencias"].forEach(id => {
-document.getElementById("btn-novo").style.display = "block"
-document.getElementById("btn-exportar-grupo").style.display = "flex"
+    document.getElementById(id).style.display = "block"
   })
-
-  document.getElementById("btn-novo").style.display = "block"
+  document.getElementById("btn-novo").style.display          = "block"
+  document.getElementById("btn-exportar-grupo").style.display = "flex"
 
   mostrarResumo()
   mostrarDrama()
@@ -218,22 +209,20 @@ function esconderResultados() {
   ;["resumo", "drama", "personagem", "equivalencias"].forEach(id => {
     document.getElementById(id).style.display = "none"
   })
-document.getElementById("btn-novo").style.display = "none"
-document.getElementById("btn-exportar-grupo").style.display = "none"
+  document.getElementById("btn-novo").style.display           = "none"
+  document.getElementById("btn-exportar-grupo").style.display = "none"
 }
 
 function resetar() {
   esconderResultados()
   treinoAtual = null
 
-  // Limpa form manual
   document.getElementById("input-nome").value    = ""
   document.getElementById("input-duracao").value = ""
   document.getElementById("lista-exercicios").innerHTML = ""
   contadorExercicios = 0
   adicionarExercicio()
 
-  // Limpa CSV
   document.getElementById("csv-status").style.display   = "none"
   document.getElementById("csv-selector").style.display = "none"
   document.getElementById("input-csv").value            = ""
@@ -248,7 +237,6 @@ function detectarMusculos(exercicios) {
   const grupos = exercicios.map(e => e.grupo).filter(Boolean)
   const unicos = [...new Set(grupos)]
 
-  // Se não tiver grupo selecionado, usa o nome do exercício
   const primeiroExercicio = exercicios[0]?.nome || "treino"
   const segundoExercicio  = exercicios[1]?.nome || exercicios[0]?.nome || "treino"
 
@@ -265,30 +253,30 @@ function detectarMusculos(exercicios) {
 
 function substituir(frase, musculos, exercicios) {
   return frase
-    .replace(/\[grupo dominante\]/g,            musculos.dominante)
-    .replace(/\[grupo principal\]/g,             musculos.dominante)
-    .replace(/\[músculo principal\]/g,           musculos.dominante)
-    .replace(/\[parte do corpo principal\]/g,    musculos.dominante)
-    .replace(/\[parte do corpo bem treinada\]/g, musculos.dominante)
-    .replace(/\[superior\]/g,                    musculos.dominante)
-    .replace(/\[exercício principal\]/g,         exercicios[0]?.nome || "exercício")
-    .replace(/\[exercício\]/g,                   exercicios[0]?.nome || "exercício")
-    .replace(/\[músculo envolvido\]/g,           musculos.dominante)
-    .replace(/\[grupo muscular\]/g,              musculos.dominante)
+    .replace(/\[grupo dominante\]/g,             musculos.dominante)
+    .replace(/\[grupo principal\]/g,              musculos.dominante)
+    .replace(/\[músculo principal\]/g,            musculos.dominante)
+    .replace(/\[parte do corpo principal\]/g,     musculos.dominante)
+    .replace(/\[parte do corpo bem treinada\]/g,  musculos.dominante)
+    .replace(/\[superior\]/g,                     musculos.dominante)
+    .replace(/\[exercício principal\]/g,          exercicios[0]?.nome || "exercício")
+    .replace(/\[exercício\]/g,                    exercicios[0]?.nome || "exercício")
+    .replace(/\[músculo envolvido\]/g,            musculos.dominante)
+    .replace(/\[grupo muscular\]/g,               musculos.dominante)
     .replace(/\[grupo muscular negligenciado\]/g, musculos.negligenciado)
-    .replace(/\[grupo negligenciado\]/g,         musculos.negligenciado)
-    .replace(/\[grupo fraco\]/g,                 musculos.negligenciado)
-    .replace(/\[outros\]/g,                      musculos.secundario)
-    .replace(/\[outras\]/g,                      musculos.secundario)
-    .replace(/\[resto do corpo\]/g,              musculos.secundario)
-    .replace(/\[parte ignorada\]/g,              musculos.negligenciado)
-    .replace(/\[inferior\]/g,                    musculos.negligenciado)
-    .replace(/\[bíceps\]/g,                      musculos.dominante)
-    .replace(/\[pernas\]/g,                      musculos.negligenciado)
-    .replace(/\[perna\]/g,                       musculos.negligenciado)
-    .replace(/\[glúteos\]/g,                     musculos.negligenciado)
-    .replace(/\[braços\]/g,                      musculos.dominante)
-    .replace(/\[core\]/g,                        "core")
+    .replace(/\[grupo negligenciado\]/g,          musculos.negligenciado)
+    .replace(/\[grupo fraco\]/g,                  musculos.negligenciado)
+    .replace(/\[outros\]/g,                       musculos.secundario)
+    .replace(/\[outras\]/g,                       musculos.secundario)
+    .replace(/\[resto do corpo\]/g,               musculos.secundario)
+    .replace(/\[parte ignorada\]/g,               musculos.negligenciado)
+    .replace(/\[inferior\]/g,                     musculos.negligenciado)
+    .replace(/\[bíceps\]/g,                       musculos.dominante)
+    .replace(/\[pernas\]/g,                       musculos.negligenciado)
+    .replace(/\[perna\]/g,                        musculos.negligenciado)
+    .replace(/\[glúteos\]/g,                      musculos.negligenciado)
+    .replace(/\[braços\]/g,                       musculos.dominante)
+    .replace(/\[core\]/g,                         "core")
 }
 
 
@@ -296,7 +284,7 @@ function substituir(frase, musculos, exercicios) {
 
 function mostrarResumo() {
   const container = document.getElementById("resumo-conteudo")
-  const t = treinoAtual
+  const t         = treinoAtual
 
   const stats = `
     <div class="resumo-stats">
@@ -353,7 +341,7 @@ function mostrarDrama() {
   ]
 
   const sorteada = frases[Math.floor(Math.random() * frases.length)]
-  let formatada = substituir(sorteada, musculos, treinoAtual.exercicios)
+  let formatada  = substituir(sorteada, musculos, treinoAtual.exercicios)
 
   musculos.todos.concat([musculos.negligenciado]).forEach(m => {
     formatada = formatada.replace(new RegExp(`\\b${m}\\b`, "gi"), `<em>${m}</em>`)
@@ -369,16 +357,16 @@ function mostrarPersonagem() {
   const musculos = detectarMusculos(treinoAtual.exercicios)
 
   const personagens = [
-    { emoji: "💅", nome: "Marombeira Caótica",          descricao: "Energia de vilã em pleno training arc. [grupo dominante] recebeu atenção obsessiva, enquanto [grupo negligenciado] foi ignorado com consistência. Farmou aura, moggou geral e saiu antes de fazer sentido." },
-    { emoji: "⚔️", nome: "Guerreira Disciplinada",       descricao: "Apareceu. Executou. Foi embora. Zero pensamentos, só repetição. [grupo dominante] evoluiu, [outros] acompanharam como puderam. Consistência silenciosa que humilhou sem esforço." },
-    { emoji: "🎬", nome: "Protagonista",                 descricao: "Esse treino tinha trilha sonora. [exercício principal] foi o clímax. [grupo dominante] brilhou, [grupo negligenciado]… teve participação especial. Energia de protagonista, mesmo sem roteiro definido." },
-    { emoji: "🤡", nome: "Delulu mas Comprometida",      descricao: "A lógica do treino era questionável, mas a entrega foi total. [grupo dominante] recebeu amor exagerado. [grupo negligenciado] recebeu pensamentos positivos. Serviu muito. Amou, né?" },
-    { emoji: "💄", nome: "Ícone Questionável",           descricao: "Entregou estética em [grupo dominante] e narrativa confusa no resto. Ninguém entendeu o plano, mas você sustentou com confiança. Isso por si só já impressiona." },
-    { emoji: "🧃", nome: "Energia de Segunda-feira",     descricao: "Você veio. Não necessariamente quis, mas veio. [grupo dominante] foi feito no modo automático. [outros] ficaram para uma próxima versão sua." },
-    { emoji: "🐍", nome: "Vilã em Construção",           descricao: "Existe intenção. Existe presença. Falta coerência no treino de [grupo negligenciado]. Mas isso faz parte do arco." },
+    { emoji: "💅", nome: "Marombeira Caótica",           descricao: "Energia de vilã em pleno training arc. [grupo dominante] recebeu atenção obsessiva, enquanto [grupo negligenciado] foi ignorado com consistência. Farmou aura, moggou geral e saiu antes de fazer sentido." },
+    { emoji: "⚔️", nome: "Guerreira Disciplinada",        descricao: "Apareceu. Executou. Foi embora. Zero pensamentos, só repetição. [grupo dominante] evoluiu, [outros] acompanharam como puderam. Consistência silenciosa que humilhou sem esforço." },
+    { emoji: "🎬", nome: "Protagonista",                  descricao: "Esse treino tinha trilha sonora. [exercício principal] foi o clímax. [grupo dominante] brilhou, [grupo negligenciado]… teve participação especial. Energia de protagonista, mesmo sem roteiro definido." },
+    { emoji: "🤡", nome: "Delulu mas Comprometida",       descricao: "A lógica do treino era questionável, mas a entrega foi total. [grupo dominante] recebeu amor exagerado. [grupo negligenciado] recebeu pensamentos positivos. Serviu muito. Amou, né?" },
+    { emoji: "💄", nome: "Ícone Questionável",            descricao: "Entregou estética em [grupo dominante] e narrativa confusa no resto. Ninguém entendeu o plano, mas você sustentou com confiança. Isso por si só já impressiona." },
+    { emoji: "🧃", nome: "Energia de Segunda-feira",      descricao: "Você veio. Não necessariamente quis, mas veio. [grupo dominante] foi feito no modo automático. [outros] ficaram para uma próxima versão sua." },
+    { emoji: "🐍", nome: "Vilã em Construção",            descricao: "Existe intenção. Existe presença. Falta coerência no treino de [grupo negligenciado]. Mas isso faz parte do arco." },
     { emoji: "💪", nome: "Moggou Geral (Sem Explicação)", descricao: "Você não sabe exatamente o que fez. Mas fez. [grupo dominante] saiu superior. Os outros ficaram confusos. Funcionou mesmo assim." },
-    { emoji: "💀", nome: "Caos Controlado",              descricao: "De fora parece bagunça. De dentro… também. Mas [grupo dominante] evoluiu. E no fim, é isso que você vai defender." },
-    { emoji: "👑", nome: "Deu o Nome",                   descricao: "Não foi perfeito. Não foi completo. Mas teve presença. [grupo dominante] foi valorizado. E você sustentou isso até o fim. DIVA." }
+    { emoji: "💀", nome: "Caos Controlado",               descricao: "De fora parece bagunça. De dentro… também. Mas [grupo dominante] evoluiu. E no fim, é isso que você vai defender." },
+    { emoji: "👑", nome: "Deu o Nome",                    descricao: "Não foi perfeito. Não foi completo. Mas teve presença. [grupo dominante] foi valorizado. E você sustentou isso até o fim. DIVA." }
   ]
 
   const sorteado  = personagens[Math.floor(Math.random() * personagens.length)]
@@ -416,7 +404,7 @@ function mostrarEquivalencias() {
   ]
 
   const sorteadas = [...equivalencias].sort(() => Math.random() - 0.5).slice(0, 3)
-  const lista = document.getElementById("equivalencias-lista")
+  const lista     = document.getElementById("equivalencias-lista")
   lista.className = "equivalencias-lista"
   lista.innerHTML = sorteadas.map(e => `
     <li class="equiv-item">

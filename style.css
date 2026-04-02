@@ -32,10 +32,9 @@ body::after {
   z-index: 0; pointer-events: none;
 }
 
-header, section, nav, .entrada-tabs, #btn-novo, #sem-dados, #com-dados {
-  position: relative;
-  z-index: 1;
-}
+header, section, nav, .entrada-tabs,
+#btn-novo, #btn-exportar-grupo,
+#sem-dados, #com-dados { position: relative; z-index: 1; }
 
 /* === CABEÇALHO === */
 header { margin-bottom: 1.25rem; }
@@ -56,14 +55,10 @@ h1 {
 }
 
 h1 span { color: #ff4d6d; }
-
 .subtitulo { font-size: 14px; color: #999; margin-top: 8px; }
 
-/* === NAVEGAÇÃO === */
-.app-nav {
-  display: flex; gap: 8px;
-  margin-bottom: 1rem;
-}
+/* === NAV === */
+.app-nav { display: flex; gap: 8px; margin-bottom: 1rem; }
 
 .nav-btn {
   flex: 1; padding: 10px;
@@ -75,18 +70,11 @@ h1 span { color: #ff4d6d; }
   transition: all 0.15s;
 }
 
-.nav-btn.active {
-  background: #1a1a1a; color: #fff;
-  border-color: #1a1a1a;
-}
-
+.nav-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 .nav-btn:hover:not(.active) { background: #f5f0e8; color: #1a1a1a; }
 
-/* === TABS DE ENTRADA === */
-.entrada-tabs {
-  display: flex; gap: 8px;
-  margin-bottom: 1rem;
-}
+/* === TABS === */
+.entrada-tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
 
 .tab-btn {
   flex: 1; padding: 10px;
@@ -98,11 +86,7 @@ h1 span { color: #ff4d6d; }
   cursor: pointer; transition: all 0.15s;
 }
 
-.tab-btn.active {
-  background: #ff4d6d; color: #fff;
-  border-color: #ff4d6d;
-}
-
+.tab-btn.active { background: #ff4d6d; color: #fff; border-color: #ff4d6d; }
 .tab-btn:hover:not(.active) { background: #f5f0e8; color: #1a1a1a; }
 
 /* === CARDS === */
@@ -128,31 +112,23 @@ h1 span { color: #ff4d6d; }
 #tab-csv.card::before,
 #resumo.card::before,
 #drama.card::before,
-#stats-gerais.card::before { background: #ff4d6d; }
-
-#personagem.card::before   { background: #7b8cff; }
-#equivalencias.card::before { background: #00c897; }
+#stats-gerais.card::before    { background: #ff4d6d; }
+#personagem.card::before      { background: #7b8cff; }
+#equivalencias.card::before   { background: #00c897; }
 #card-frequencia.card::before { background: #ff4d6d; }
 #card-grupamento.card::before { background: #7b8cff; }
-#card-carga.card::before    { background: #00c897; }
-#card-recordes.card::before { background: #f5c842; }
+#card-carga.card::before      { background: #00c897; }
+#card-recordes.card::before   { background: #f5c842; }
 
-.empty-state {
-  text-align: center;
-  padding: 2.5rem 1.5rem;
-}
+.empty-state { text-align: center; padding: 2.5rem 1.5rem; }
 
-.card-header {
-  display: flex; align-items: center;
-  gap: 10px; margin-bottom: 14px;
-}
+.card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 
 .icone {
   width: 32px; height: 32px;
   border-radius: 10px;
   background: #f5f0e8;
-  display: flex; align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   font-size: 15px;
 }
 
@@ -175,15 +151,14 @@ h1 span { color: #ff4d6d; }
 .stat-label  { font-size: 11px; color: #aaa; margin-top: 2px; }
 
 .exercicio-item {
-  display: flex; justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   padding: 9px 0;
   border-bottom: 1px solid #f0ebe0;
   font-size: 14px;
 }
 
 .exercicio-item:last-child { border-bottom: none; }
-.exercicio-nome  { color: #1a1a1a; font-weight: 500; }
+.exercicio-nome   { color: #1a1a1a; font-weight: 500; }
 .exercicio-detalhe { color: #aaa; font-size: 12px; }
 
 .ex-grupo-badge {
@@ -210,10 +185,7 @@ h1 span { color: #ff4d6d; }
 .char-descricao { font-size: 14px; color: #666; line-height: 1.7; }
 
 /* === EQUIVALÊNCIAS === */
-.equivalencias-lista {
-  list-style: none;
-  display: flex; flex-direction: column; gap: 12px;
-}
+.equivalencias-lista { list-style: none; display: flex; flex-direction: column; gap: 12px; }
 
 .equiv-item {
   display: flex; align-items: flex-start;
@@ -230,41 +202,19 @@ h1 span { color: #ff4d6d; }
 .upload-area {
   border: 2px dashed #e8e3da;
   border-radius: 14px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  margin-bottom: 12px;
-  background: #fafaf8;
+  padding: 2rem; text-align: center;
+  cursor: pointer; transition: all 0.15s;
+  margin-bottom: 12px; background: #fafaf8;
 }
 
-.upload-area:hover, .upload-area.dragover {
-  border-color: #ff4d6d;
-  background: #fff8f9;
-}
-
+.upload-area:hover, .upload-area.dragover { border-color: #ff4d6d; background: #fff8f9; }
 .upload-icon  { font-size: 32px; margin-bottom: 8px; }
 .upload-texto { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
 .upload-sub   { font-size: 12px; color: #aaa; }
 
-.btn-upload {
-  width: 100%; padding: 10px;
-  background: #f5f0e8; border: none;
-  border-radius: 10px;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 13px; font-weight: 700;
-  color: #888; cursor: pointer;
-  transition: background 0.15s;
-  margin-bottom: 4px;
-}
-
-.btn-upload:hover { background: #ede8df; }
-
 .csv-status {
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 13px; font-weight: 600;
-  margin-top: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; margin-top: 10px;
 }
 
 .csv-status.loading { background: #f5f0e8; color: #888; }
@@ -289,8 +239,7 @@ h1 span { color: #ff4d6d; }
   border-radius: 8px;
   padding: 9px 12px;
   font-family: "Space Grotesk", sans-serif;
-  font-size: 13px; color: #1a1a1a;
-  outline: none;
+  font-size: 13px; color: #1a1a1a; outline: none;
 }
 
 .form-input:focus { box-shadow: 0 0 0 2px #ff4d6d44; }
@@ -299,14 +248,12 @@ h1 span { color: #ff4d6d; }
 .form-section-label {
   font-size: 11px; font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em; color: #bbb;
-  margin-bottom: 10px;
+  letter-spacing: 0.08em; color: #bbb; margin-bottom: 10px;
 }
 
-/* === BLOCO DE EXERCÍCIO === */
+/* === EXERCÍCIO === */
 .ex-box {
-  background: #fafafa;
-  border-radius: 12px;
+  background: #fafafa; border-radius: 12px;
   padding: 12px; margin-bottom: 10px;
   border: 1px solid #f0ebe0;
 }
@@ -314,8 +261,7 @@ h1 span { color: #ff4d6d; }
 .ex-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 32px;
-  gap: 6px; margin-bottom: 8px;
-  align-items: end;
+  gap: 6px; margin-bottom: 8px; align-items: end;
 }
 
 .ex-num { max-width: 70px; }
@@ -327,23 +273,18 @@ h1 span { color: #ff4d6d; }
   color: #ff4d6d; font-size: 16px; font-weight: 700;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  margin-top: 18px;
-  transition: background 0.15s;
+  margin-top: 18px; transition: background 0.15s;
 }
 
 .btn-remover:hover { background: #ffd6de; }
 
 /* === TOGGLES MÚSCULO === */
-.musculos-row {
-  display: flex; flex-wrap: wrap;
-  align-items: center; gap: 4px;
-}
+.musculos-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 
 .musculo-sep {
   font-size: 9px; font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em; color: #ccc;
-  margin-right: 2px;
+  letter-spacing: 0.08em; color: #ccc; margin-right: 2px;
 }
 
 .musculo-sep:not(:first-child) { margin-left: 6px; }
@@ -353,24 +294,20 @@ h1 span { color: #ff4d6d; }
   padding: 3px 9px; border-radius: 20px;
   border: 1px solid #eee;
   color: #aaa; background: #fff;
-  cursor: pointer;
-  transition: all 0.12s;
+  cursor: pointer; transition: all 0.12s;
 }
 
-.musculo-tag:hover    { border-color: #ffb3c0; color: #ff4d6d; }
+.musculo-tag:hover { border-color: #ffb3c0; color: #ff4d6d; }
 .musculo-tag.selecionado { background: #fff0f2; border-color: #ff4d6d; color: #ff4d6d; }
 
 /* === BOTÕES === */
-button { transition: opacity 0.15s, transform 0.15s; }
-
 .btn-add-ex {
   width: 100%; padding: 9px;
   background: #f5f0e8; border: none;
   border-radius: 10px;
   font-family: "Space Grotesk", sans-serif;
   font-size: 12px; font-weight: 700;
-  color: #aaa; cursor: pointer;
-  margin-top: 4px;
+  color: #aaa; cursor: pointer; margin-top: 4px;
 }
 
 .btn-add-ex:hover { background: #ede8df; }
@@ -381,7 +318,7 @@ button { transition: opacity 0.15s, transform 0.15s; }
   border: none; border-radius: 14px;
   font-family: "Space Grotesk", sans-serif;
   font-size: 14px; font-weight: 700;
-  cursor: pointer;
+  cursor: pointer; transition: opacity 0.15s;
 }
 
 .btn-gerar:hover { opacity: 0.88; }
@@ -394,24 +331,18 @@ button { transition: opacity 0.15s, transform 0.15s; }
   font-family: "Space Grotesk", sans-serif;
   font-size: 14px; font-weight: 700;
   cursor: pointer; margin-bottom: 1rem;
-  display: block; text-align: center;
-  text-decoration: none;
+  display: block; text-align: center; text-decoration: none;
 }
 
 .btn-outline:hover { background: #f5f0e8; color: #1a1a1a; border-color: #ccc; }
-/* === BOTÕES DE EXPORTAR === */
+
 .btn-exportar {
-  flex: 1;
-  padding: 12px;
-  background: #1a1a1a;
-  color: #fff;
-  border: none;
-  border-radius: 14px;
+  flex: 1; padding: 12px;
+  background: #1a1a1a; color: #fff;
+  border: none; border-radius: 14px;
   font-family: "Space Grotesk", sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s;
 }
 
 .btn-exportar:hover { opacity: 0.8; }
